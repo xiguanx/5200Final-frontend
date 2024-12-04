@@ -2,6 +2,14 @@ const Book = require("./book.model");
 
 const postABook = async (req, res) => {
     try {
+        const { ISBN } = req.body;
+
+        // Check if a book with the same ISBN already exists
+        const existingBook = await Book.findOne({ ISBN });
+        if (existingBook) {
+            return res.status(400).send({ message: "A book with this ISBN already exists" });
+        }
+
         const newBook = await Book({...req.body});
         await newBook.save();
         res.status(200).send({message: "Book posted successfully", book: newBook})
